@@ -88,7 +88,30 @@ function LifeInsurance() {
           }
         });
         console.log('Form submitted successfully:', response.data);
+  
+        // Send email notification
+        const emailPayload = {
+          userEmail: formData.userEmail,
+          policyNumber: formData.policyNumber,
+          coverageAmount: formData.coverageAmount,
+          startDate: formData.startDate,
+          endDate: formData.endDate
+        };
         
+        try {
+          const emailResponse = await axios.post('http://localhost:8081/api/lifeinsurance/send_email', emailPayload, {
+            auth:{
+              username: 'user',
+              password: 'user'
+            }
+          });
+          console.log('Email sent successfully:', emailResponse.data);
+          alert("Policy created and email sent successfully!"); 
+        } catch (emailError) {
+          console.error('Error sending email:', emailError);
+          alert("Policy created, but there was an error sending the email.");
+        }
+  
         // Clear the form data
         setFormData({
           policyNumber: "",
@@ -109,19 +132,16 @@ function LifeInsurance() {
           sumAssured: "",
           riskCoverDetails: ""
         });
-        
-        // Display success message
-        alert("Policy created successfully!"); // You can replace this with a more sophisticated UI message if needed.
-        
+  
       } catch (error) {
         console.error('Error submitting form:', error);
-        // Handle error (e.g., show error message to user)
         alert("There was an error creating the policy. Please try again.");
       }
     } else {
       console.log("Form has errors. Please correct them.");
     }
   };
+  
 
   return (
     <>
